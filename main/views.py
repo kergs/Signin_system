@@ -1,11 +1,17 @@
 from django.shortcuts import render, redirect
 from .forms import NewUserForm
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
+from .models import Book
 
 
 # Create your views here.
+
+def homepage(request):
+   books = Book.objects.all()
+   return render(request=request, template_name='main/home.html')
+
 def register_request(request):
     if request.method == "POST":
        form = NewUserForm(request.POST)
@@ -38,5 +44,10 @@ def login_request(request):
      else:
           messages.error(request, "Invalid username or password.")
    form = AuthenticationForm()
-   
+
    return render(request=request, template_name="main/login.html", context={"login_form":form})
+
+def logout_request(request):
+	logout(request)
+	messages.info(request, "You have successfully logged out.") 
+	return redirect("main:homepage")
